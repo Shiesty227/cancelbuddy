@@ -13,7 +13,7 @@ The app uses local storage, so subscription data and settings are stored on the 
 ### Subscription management
 
 * Add, edit, and delete subscriptions
-* Add subscriptions manually or choose from predefined templates
+* Add subscriptions by entering the details manually
 * Store subscription name, price, currency, category, billing cycle, notes, and management/cancellation URL
 * Support for weekly, monthly, and yearly billing cycles
 * Automatic calculation of monthly and yearly equivalent costs
@@ -24,6 +24,14 @@ The app uses local storage, so subscription data and settings are stored on the 
 * Automatically advance overdue recurring renewals
 * Display upcoming renewals in the dashboard
 * Show renewal status such as today, tomorrow, or number of days remaining
+* Progress bar on each subscription that fills as renewal approaches, turning amber in the final week and red on the last day
+
+### Savings tracker
+
+* When removing a subscription, choose whether you cancelled it or just want to delete it
+* Cancelled subscriptions are counted as savings, with a confetti celebration
+* Dashboard card shows yearly savings and the total saved so far
+* View and remove entries from the cancelled list
 
 ### Renewal reminders
 
@@ -53,31 +61,29 @@ The app uses local storage, so subscription data and settings are stored on the 
 * Category-based progress indicators
 * Expandable spending categories
 
-### Predefined subscriptions
+### Categories
 
-The app includes predefined subscription templates across categories including:
+Each subscription is assigned a category, which drives its icon, colour, and spending breakdown:
 
 * Entertainment
 * Music
 * AI
 * Software
-* Cloud Storage
+* Cloud
 * Gaming
 * Fitness
 * News & Reading
 * Bills
-
-Users can search the catalogue and filter it by category before adding a subscription.
-
-Predefined prices are stored in the application as templates and should not be treated as guaranteed current provider pricing.
+* Other
 
 ### Interface
 
 * Material 3 design
 * Light and dark themes
-* Service-specific icons and visual styling
+* Category-based icons and visual styling
 * Animated dashboard totals and subscription cards
-* Responsive subscription selection and editing screens
+* Haptic feedback when saving, removing, and toggling settings
+* Responsive subscription editing screens
 * Custom app icon
 
 ## Screens
@@ -85,7 +91,6 @@ Predefined prices are stored in the application as templates and should not be t
 The application includes:
 
 * Dashboard
-* Subscription selection
 * Add Subscription
 * Edit Subscription
 * Settings
@@ -112,12 +117,24 @@ The application includes:
 ```text
 lib/
 ├── main.dart
-├── choose_subscription.dart
+├── app_settings.dart
+├── celebration.dart
 ├── currency_utils.dart
 ├── notification_service.dart
-├── predefined.dart
+├── savings.dart
 ├── service_icons.dart
-└── subscription.dart
+├── subscription.dart
+├── screens/
+│   ├── home_screen.dart
+│   ├── add_subscription_screen.dart
+│   ├── edit_subscription_screen.dart
+│   └── settings_screen.dart
+├── widgets/
+│   ├── home_cards.dart
+│   ├── spending_insights.dart
+│   └── form_fields.dart
+└── utils/
+    └── helpers.dart
 
 assets/
 └── CB_Icon.png
@@ -126,10 +143,22 @@ assets/
 ### Main files
 
 **`main.dart`**
-Contains the application entry point, settings, dashboard, subscription creation/editing screens, spending insights, and shared UI components.
+Application entry point: opens local storage, initializes notifications, and sets up the light and dark themes.
 
-**`choose_subscription.dart`**
-Provides the predefined subscription catalogue, search, category filtering, price conversion, and manual entry.
+**`app_settings.dart`**
+Reads and validates saved preferences such as currency, dark mode, and default reminders.
+
+**`screens/`**
+One file per screen: the dashboard (`home_screen.dart`), adding and editing subscriptions, and settings.
+
+**`widgets/`**
+Reusable UI pieces: dashboard cards and savings (`home_cards.dart`), the spending breakdown (`spending_insights.dart`), and form fields shared by the add, edit, and settings screens (`form_fields.dart`).
+
+**`utils/helpers.dart`**
+Date formatting, price parsing, cycle conversion, currency symbols, and category helpers.
+
+**`celebration.dart`**
+Draws the confetti burst shown when a subscription is cancelled.
 
 **`currency_utils.dart`**
 Handles currency symbols, exchange-rate requests, conversion, and rate caching.
@@ -137,11 +166,11 @@ Handles currency symbols, exchange-rate requests, conversion, and rate caching.
 **`notification_service.dart`**
 Initializes notifications, handles permissions, schedules renewal reminders, cancels reminders, and synchronizes notifications.
 
-**`predefined.dart`**
-Contains the built-in subscription and bill templates.
+**`savings.dart`**
+Stores cancelled subscriptions and calculates how much the user has saved.
 
 **`service_icons.dart`**
-Provides service-specific icons, colours, and background styling.
+Provides category-based icons, colours, and background styling, plus icons for common household bills.
 
 **`subscription.dart`**
 Contains the subscription data model, recurring-cost calculations, renewal calculations, validation, and local serialization.
@@ -189,6 +218,7 @@ CancelBuddy uses Hive for local persistence.
 The app stores:
 
 * Subscription records
+* Cancelled subscriptions used for savings
 * Dashboard currency preference
 * Dark mode preference
 * Default reminder days
@@ -219,7 +249,6 @@ The application requests exchange rates when converting between supported curren
 * Subscription data is stored locally on the device
 * There is currently no user account or cloud synchronization
 * Currency conversion depends on the external Frankfurter API
-* Predefined subscription prices are static templates
 * The application currently supports GBP, USD, and EUR
 
 ## Future Improvements
@@ -230,7 +259,6 @@ Possible future improvements include:
 * User accounts
 * Spending history and charts
 * More currencies
-* More predefined subscription templates
 * Deeper cancellation workflows
 * More advanced reminder options
 * Subscription statistics and trends

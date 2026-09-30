@@ -159,6 +159,59 @@ class Subscription {
     }
   }
 
+  // How far through the current billing period
+  // we are, from 0 (just renewed) to 1 (renews now).
+  double renewalProgress([
+    DateTime? now,
+  ]) {
+    final currentTime =
+        now ?? DateTime.now();
+
+    final DateTime periodStart;
+
+    switch (cycle.trim().toLowerCase()) {
+      case 'weekly':
+        periodStart = renewalDate.subtract(
+          const Duration(days: 7),
+        );
+        break;
+
+      case 'yearly':
+      case 'annual':
+        periodStart =
+            _addMonthsFromAnchor(
+          renewalDate,
+          -12,
+        );
+        break;
+
+      case 'monthly':
+      default:
+        periodStart =
+            _addMonthsFromAnchor(
+          renewalDate,
+          -1,
+        );
+    }
+
+    final total = renewalDate
+        .difference(periodStart)
+        .inMinutes;
+
+    if (total <= 0) {
+      return 1;
+    }
+
+    final elapsed = currentTime
+        .difference(periodStart)
+        .inMinutes;
+
+    return (elapsed / total).clamp(
+      0.0,
+      1.0,
+    );
+  }
+
   bool get needsRenewalUpdate {
     return !renewalDate.isAfter(
       DateTime.now(),

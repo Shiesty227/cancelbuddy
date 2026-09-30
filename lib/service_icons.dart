@@ -10,268 +10,122 @@ class ServiceStyle {
     required this.color,
     required this.backgroundColor,
   });
+
+  // Dark colours (navy, slate, brown) are hard
+  // to read on a dark background, so lighten
+  // them in dark mode.
+  ServiceStyle forBrightness(
+    Brightness brightness,
+  ) {
+    if (brightness == Brightness.light) {
+      return this;
+    }
+
+    final hsl = HSLColor.fromColor(color);
+
+    final readable = hsl.lightness < 0.7
+        ? hsl.withLightness(0.7).toColor()
+        : color;
+
+    return ServiceStyle(
+      icon: icon,
+      color: readable,
+      backgroundColor:
+          readable.withValues(alpha: 0.16),
+    );
+  }
 }
 
-ServiceStyle serviceStyle(String name) {
-  final lower = name.trim().toLowerCase();
+// Styles are picked by generic keywords in the name
+// (household bills) or by the user's chosen category.
+// No brand names are referenced on purpose.
+ServiceStyle serviceStyle(
+  String name,
+  String category,
+) {
+  final billStyle =
+      _billStyle(name.trim().toLowerCase());
 
-  switch (lower) {
-    // ENTERTAINMENT
+  if (billStyle != null) {
+    return billStyle;
+  }
 
-    case 'netflix':
+  switch (category.trim().toLowerCase()) {
+    case 'entertainment':
       return const ServiceStyle(
         icon: Icons.movie_rounded,
-        color: Color(0xFFE50914),
-        backgroundColor: Color(0x1AE50914),
+        color: Color(0xFFE53935),
+        backgroundColor: Color(0x1AE53935),
       );
 
-    case 'disney+':
-      return const ServiceStyle(
-        icon: Icons.movie_filter_rounded,
-        color: Color(0xFF113CCF),
-        backgroundColor: Color(0x1A113CCF),
-      );
-
-    case 'amazon prime':
-      return const ServiceStyle(
-        icon: Icons.shopping_bag_rounded,
-        color: Color(0xFF00A8E1),
-        backgroundColor: Color(0x1A00A8E1),
-      );
-
-    case 'youtube premium':
-      return const ServiceStyle(
-        icon: Icons.play_circle_rounded,
-        color: Color(0xFFFF0000),
-        backgroundColor: Color(0x1AFF0000),
-      );
-
-    case 'apple tv+':
-      return const ServiceStyle(
-        icon: Icons.tv_rounded,
-        color: Color(0xFF000000),
-        backgroundColor: Color(0x14000000),
-      );
-
-    case 'paramount+':
-      return const ServiceStyle(
-        icon: Icons.live_tv_rounded,
-        color: Color(0xFF0064FF),
-        backgroundColor: Color(0x1A0064FF),
-      );
-
-    case 'hbo max':
-      return const ServiceStyle(
-        icon: Icons.theaters_rounded,
-        color: Color(0xFF7B2CFF),
-        backgroundColor: Color(0x1A7B2CFF),
-      );
-
-    case 'crunchyroll':
-      return const ServiceStyle(
-        icon: Icons.animation_rounded,
-        color: Color(0xFFF47521),
-        backgroundColor: Color(0x1AF47521),
-      );
-
-    // MUSIC
-
-    case 'spotify':
+    case 'music':
       return const ServiceStyle(
         icon: Icons.music_note_rounded,
-        color: Color(0xFF1DB954),
-        backgroundColor: Color(0x1A1DB954),
+        color: Color(0xFF43A047),
+        backgroundColor: Color(0x1A43A047),
       );
 
-    case 'apple music':
-      return const ServiceStyle(
-        icon: Icons.library_music_rounded,
-        color: Color(0xFFFA243C),
-        backgroundColor: Color(0x1AFA243C),
-      );
-
-    case 'youtube music':
-      return const ServiceStyle(
-        icon: Icons.music_video_rounded,
-        color: Color(0xFFFF0000),
-        backgroundColor: Color(0x1AFF0000),
-      );
-
-    case 'amazon music':
-      return const ServiceStyle(
-        icon: Icons.headphones_rounded,
-        color: Color(0xFF25D1DA),
-        backgroundColor: Color(0x1A25D1DA),
-      );
-
-    case 'tidal':
-      return const ServiceStyle(
-        icon: Icons.graphic_eq_rounded,
-        color: Color(0xFF000000),
-        backgroundColor: Color(0x14000000),
-      );
-
-    // AI
-
-    case 'chatgpt plus':
+    case 'ai':
       return const ServiceStyle(
         icon: Icons.auto_awesome_rounded,
-        color: Color(0xFF10A37F),
-        backgroundColor: Color(0x1A10A37F),
+        color: Color(0xFF8E24AA),
+        backgroundColor: Color(0x1A8E24AA),
       );
 
-    case 'claude pro':
-      return const ServiceStyle(
-        icon: Icons.psychology_rounded,
-        color: Color(0xFFD97757),
-        backgroundColor: Color(0x1AD97757),
-      );
-
-    case 'google ai pro':
-      return const ServiceStyle(
-        icon: Icons.smart_toy_rounded,
-        color: Color(0xFF4285F4),
-        backgroundColor: Color(0x1A4285F4),
-      );
-
-    case 'perplexity pro':
-      return const ServiceStyle(
-        icon: Icons.search_rounded,
-        color: Color(0xFF20B8CD),
-        backgroundColor: Color(0x1A20B8CD),
-      );
-
-    // SOFTWARE
-
-    case 'adobe':
+    case 'software':
       return const ServiceStyle(
         icon: Icons.design_services_rounded,
-        color: Color(0xFFFF0000),
-        backgroundColor: Color(0x1AFF0000),
+        color: Color(0xFF3949AB),
+        backgroundColor: Color(0x1A3949AB),
       );
 
-    case 'microsoft 365':
-      return const ServiceStyle(
-        icon: Icons.grid_view_rounded,
-        color: Color(0xFF5E5CE6),
-        backgroundColor: Color(0x1A5E5CE6),
-      );
-
-    case 'canva':
-      return const ServiceStyle(
-        icon: Icons.palette_rounded,
-        color: Color(0xFF00A8A8),
-        backgroundColor: Color(0x1A00A8A8),
-      );
-
-    case 'notion':
-      return const ServiceStyle(
-        icon: Icons.notes_rounded,
-        color: Color(0xFF000000),
-        backgroundColor: Color(0x14000000),
-      );
-
-    case 'dropbox':
-      return const ServiceStyle(
-        icon: Icons.folder_rounded,
-        color: Color(0xFF0061FF),
-        backgroundColor: Color(0x1A0061FF),
-      );
-
-    // CLOUD STORAGE
-
-    case 'google one':
+    case 'cloud':
+    case 'cloud storage':
       return const ServiceStyle(
         icon: Icons.cloud_rounded,
-        color: Color(0xFF4285F4),
-        backgroundColor: Color(0x1A4285F4),
+        color: Color(0xFF1E88E5),
+        backgroundColor: Color(0x1A1E88E5),
       );
 
-    case 'icloud':
-      return const ServiceStyle(
-        icon: Icons.cloud_queue_rounded,
-        color: Color(0xFF3693F3),
-        backgroundColor: Color(0x1A3693F3),
-      );
-
-    case 'onedrive':
-      return const ServiceStyle(
-        icon: Icons.cloud_upload_rounded,
-        color: Color(0xFF0078D4),
-        backgroundColor: Color(0x1A0078D4),
-      );
-
-    // GAMING
-
-    case 'xbox game pass':
+    case 'gaming':
       return const ServiceStyle(
         icon: Icons.sports_esports_rounded,
-        color: Color(0xFF107C10),
-        backgroundColor: Color(0x1A107C10),
+        color: Color(0xFF00897B),
+        backgroundColor: Color(0x1A00897B),
       );
 
-    case 'playstation plus':
-      return const ServiceStyle(
-        icon: Icons.gamepad_rounded,
-        color: Color(0xFF0070CC),
-        backgroundColor: Color(0x1A0070CC),
-      );
-
-    case 'nintendo switch online':
-      return const ServiceStyle(
-        icon: Icons.videogame_asset_rounded,
-        color: Color(0xFFE60012),
-        backgroundColor: Color(0x1AE60012),
-      );
-
-    // FITNESS
-
-    case 'strava':
-      return const ServiceStyle(
-        icon: Icons.directions_run_rounded,
-        color: Color(0xFFFC4C02),
-        backgroundColor: Color(0x1AFC4C02),
-      );
-
-    case 'peloton':
+    case 'fitness':
       return const ServiceStyle(
         icon: Icons.fitness_center_rounded,
-        color: Color(0xFF000000),
-        backgroundColor: Color(0x14000000),
+        color: Color(0xFFFF6F00),
+        backgroundColor: Color(0x1AFF6F00),
       );
 
-    // NEWS & READING
-
-    case 'the new york times':
-      return const ServiceStyle(
-        icon: Icons.newspaper_rounded,
-        color: Color(0xFF000000),
-        backgroundColor: Color(0x14000000),
-      );
-
-    case 'the guardian':
-      return const ServiceStyle(
-        icon: Icons.article_rounded,
-        color: Color(0xFF052962),
-        backgroundColor: Color(0x1A052962),
-      );
-
-    case 'linkedin premium':
-      return const ServiceStyle(
-        icon: Icons.work_rounded,
-        color: Color(0xFF0A66C2),
-        backgroundColor: Color(0x1A0A66C2),
-      );
-
-    case 'amazon kindle unlimited':
+    case 'news & reading':
       return const ServiceStyle(
         icon: Icons.menu_book_rounded,
-        color: Color(0xFFFF9900),
-        backgroundColor: Color(0x1AFF9900),
+        color: Color(0xFF6D4C41),
+        backgroundColor: Color(0x1A6D4C41),
       );
 
-    // BILLS
+    case 'bills':
+      return const ServiceStyle(
+        icon: Icons.receipt_rounded,
+        color: Color(0xFF546E7A),
+        backgroundColor: Color(0x1A546E7A),
+      );
 
+    default:
+      return const ServiceStyle(
+        icon: Icons.receipt_long_rounded,
+        color: Color(0xFF5E6AD2),
+        backgroundColor: Color(0x1A5E6AD2),
+      );
+  }
+}
+
+ServiceStyle? _billStyle(String lower) {
+  switch (lower) {
     case 'electricity':
       return const ServiceStyle(
         icon: Icons.bolt_rounded,
@@ -301,6 +155,7 @@ ServiceStyle serviceStyle(String name) {
       );
 
     case 'broadband':
+    case 'internet':
       return const ServiceStyle(
         icon: Icons.wifi_rounded,
         color: Color(0xFF00A896),
@@ -308,6 +163,7 @@ ServiceStyle serviceStyle(String name) {
       );
 
     case 'mobile phone':
+    case 'phone':
       return const ServiceStyle(
         icon: Icons.phone_iphone_rounded,
         color: Color(0xFF7E57C2),
@@ -322,6 +178,7 @@ ServiceStyle serviceStyle(String name) {
       );
 
     case 'rent':
+    case 'home insurance':
       return const ServiceStyle(
         icon: Icons.home_rounded,
         color: Color(0xFF00897B),
@@ -333,13 +190,6 @@ ServiceStyle serviceStyle(String name) {
         icon: Icons.home_work_rounded,
         color: Color(0xFF3949AB),
         backgroundColor: Color(0x1A3949AB),
-      );
-
-    case 'home insurance':
-      return const ServiceStyle(
-        icon: Icons.home_rounded,
-        color: Color(0xFF00897B),
-        backgroundColor: Color(0x1A00897B),
       );
 
     case 'car insurance':
@@ -385,18 +235,6 @@ ServiceStyle serviceStyle(String name) {
       );
 
     default:
-      return const ServiceStyle(
-        icon: Icons.receipt_long_rounded,
-        color: Color(0xFF5E6AD2),
-        backgroundColor: Color(0x1A5E6AD2),
-      );
+      return null;
   }
-}
-
-IconData serviceIcon(String name) {
-  return serviceStyle(name).icon;
-}
-
-Color serviceColor(String name) {
-  return serviceStyle(name).color;
 }
